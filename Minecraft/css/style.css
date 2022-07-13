@@ -1,0 +1,43 @@
+* {
+    margin: 0 auto;
+}
+
+
+
+.title {
+
+    width: 80%;
+    height: 25px;
+    line-height: 25px;
+    padding-left: 25px;
+    font-size: 14px;
+    background-color: #ececec;
+}
+
+p {
+    float: right;
+    margin-right: 10px;
+    font-size: 12px;
+}
+
+.login {
+    width: 86%;
+    border: 1px solid #ececec;
+}
+
+.jihuo {
+    margin-left: 40px;
+}
+
+.ts {
+    margin-left: 80px;
+    width: 200px;
+}
+
+
+.ojbk button {
+    margin-left: 80px;
+    height: 30px;
+    width: 140px;
+
+}
