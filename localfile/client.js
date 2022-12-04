@@ -1,0 +1,1 @@
+let downloadlink_server = 'https://i.alongw.cn/'
