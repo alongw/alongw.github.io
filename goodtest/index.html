@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>精准测试</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      h1 {
+        text-align: center;
+      }
+      .tips {
+        margin: 0 auto;
+        max-width: 600px;
+        border: 1px solid skyblue;
+        border-radius: 15px;
+        padding: 15px;
+      }
+
+      button {
+        cursor: pointer;
+        display: block;
+        margin: 15px auto;
+        border: 1px solid #00a381;
+        background: none;
+        padding: 10px 30px;
+        border-radius: 5px;
+        text-align: center;
+      }
+
+      .testing,
+      .jg {
+        display: none;
+        margin: 0 auto;
+        max-width: 600px;
+        border: 1px solid skyblue;
+        border-radius: 15px;
+      }
+
+      .jg {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>性格测试</h1>
+    <div class="tips">
+      斯坦福大学校长凯瑟琳·沃尔什曾经说过：<em>每个人都是与众不同的。在这个充满多彩性格的世界里，我们的独特之处构成了无限的宝藏。个性是我们的灵魂之窗，每个人都有自己独特的故事，通过性格来书写。无论我们走到哪里，都会遇见不同性格的人，正是这些不同，构成了我们共同的人类画卷。</em>那么你想要知道自己是怎么样的人吗？快来测测吧！
+      <button onclick="start()">开始测试</button>
+    </div>
+    <div class="testing">
+      <h3>
+        问题一：如果有一天，你很无聊，你的好朋友约你出去完。到了中午，他问你吃什么，你会选择
+      </h3>
+      <button onclick="jg('甜点')">甜点</button>
+      <button onclick="jg('蔬菜')">蔬菜</button>
+      <button onclick="jg('巧克力')">巧克力</button>
+      <button onclick="jg('零食')">零食</button>
+      <button onclick="jg('火锅')">火锅</button>
+      <button onclick="jg('料理')">料理</button>
+      <button onclick="jg('随便')">随便</button>
+    </div>
+    <div class="jg">
+      <h2>怎么样？是不是很准？</h2>
+      <h3>快转发给你的朋友，让 ta 也来测测吧！</h3>
+    </div>
+
+    <script>
+      const start = () => {
+        document.querySelector(".tips").style.display = "none";
+        document.querySelector(".testing").style.display = "block";
+      };
+      const jg = (msg) => {
+        document.querySelector(".testing").style.display = "none";
+        document.querySelector(".jg").style.display = "block";
+        alert(`测试完成~你是喜欢吃${msg}的人！`);
+      };
+    </script>
+  </body>
+</html>
