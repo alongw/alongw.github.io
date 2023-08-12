@@ -42,6 +42,36 @@
       .jg {
         text-align: center;
       }
+
+      @keyframes loading {
+        0% {
+          width: 0%;
+        }
+        5% {
+          width: 10%;
+        }
+        80% {
+          width: 95%;
+        }
+        100% {
+          width: 100%;
+        }
+      }
+      .loading {
+        display: none;
+        max-width: 80%;
+        margin: 0 auto;
+        text-align: center;
+        border: 1px solid skyblue;
+        overflow: hidden;
+      }
+
+      .loading .ljt {
+        /* animation: loading 10s linear infinite; */
+        width: 0%;
+        background-color: skyblue;
+        margin: 5px;
+      }
     </style>
   </head>
   <body>
@@ -49,6 +79,11 @@
     <div class="tips">
       斯坦福大学校长凯瑟琳·沃尔什曾经说过：<em>每个人都是与众不同的。在这个充满多彩性格的世界里，我们的独特之处构成了无限的宝藏。个性是我们的灵魂之窗，每个人都有自己独特的故事，通过性格来书写。无论我们走到哪里，都会遇见不同性格的人，正是这些不同，构成了我们共同的人类画卷。</em>那么你想要知道自己是怎么样的人吗？快来测测吧！
       <button onclick="start()">开始测试</button>
+    </div>
+    <div class="loading">
+      <h3>加载中...</h3>
+      <p>题目较多，请耐心等待</p>
+      <div class="ljt">&nbsp;</div>
     </div>
     <div class="testing">
       <h3>
@@ -70,7 +105,13 @@
     <script>
       const start = () => {
         document.querySelector(".tips").style.display = "none";
-        document.querySelector(".testing").style.display = "block";
+        document.querySelector(".loading .ljt").style.animation =
+          "loading 10s linear infinite";
+        document.querySelector(".loading").style.display = "block";
+        setTimeout(() => {
+          document.querySelector(".loading").style.display = "none";
+          document.querySelector(".testing").style.display = "block";
+        }, 10000);
       };
       const jg = (msg) => {
         document.querySelector(".testing").style.display = "none";
