@@ -90,7 +90,7 @@
             const key = document.querySelector('[data-key]').value
             const service = document.querySelector('[data-service]').value
             const phrase = document.querySelector('[data-phrase]').value
-            const length = document.querySelector('[data-length]').value
+            const length = +document.querySelector('[data-length]').value
 
             const combined = `${phrase}:${service}:${key}`
 
