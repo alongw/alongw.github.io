@@ -64,7 +64,7 @@
     </div>
 
     <div>
-        length：<input data-length type="number" value="6" autocomplete="off">
+        length：<input data-length type="number" value="6" max="64" min="1" autocomplete="off">
         <button onclick="changeLength(6)">6</button>
 
 
@@ -78,6 +78,7 @@
 
     <div data-hidden="true" class="result">
         result：<input type="text" readonly>
+        <button onclick="copy()">copy</button>
     </div>
 
     <script>
@@ -114,7 +115,13 @@
             document.querySelector('[data-service]').value = ''
             document.querySelector('[data-phrase]').value = ''
             document.querySelector('[data-length]').value = 6
-            
+
+        }
+
+        const copy = () => {
+            const input = document.querySelector('.result input')
+            input.select()
+            document.execCommand('copy')
         }
     </script>
 </body>
