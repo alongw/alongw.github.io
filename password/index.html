@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字密码生成器</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.0.0/crypto-js.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        div {
+            margin: 10px;
+        }
+
+        input {
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="number"] {
+            width: 50px;
+        }
+
+        button {
+            cursor: pointer;
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background: #f0f0f0;
+        }
+
+        button:hover {
+            background: #e0e0e0;
+        }
+
+        button:active {
+            background: #ccc;
+        }
+
+        [data-hidden="true"] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        key：<input data-key type="text" autocomplete="off" placeholder="eg. 114514">
+    </div>
+
+    <div>
+        service：<input data-service id="service" type="text" autocomplete="off" placeholder="eg. google">
+    </div>
+
+    <div>
+        phrase：<input data-phrase type="text" autocomplete="off" placeholder="eg. 1919810">
+    </div>
+
+    <div>
+        length：<input data-length type="number" value="6" autocomplete="off">
+        <button onclick="changeLength(6)">6</button>
+
+
+        <button onclick="changeLength(4)">4</button>
+    </div>
+
+    <div class="submit">
+        <button onclick="getSubmit()">submit</button>
+        <button onclick="reset()">reset</button>
+    </div>
+
+    <div data-hidden="true" class="result">
+        result：<input type="text" readonly>
+    </div>
+
+    <script>
+        const changeLength = (length) => {
+            document.querySelector('[data-length]').value = length
+        };
+
+        const getSubmit = () => {
+            const key = document.querySelector('[data-key]').value
+            const service = document.querySelector('[data-service]').value
+            const phrase = document.querySelector('[data-phrase]').value
+            const length = document.querySelector('[data-length]').value
+
+            const combined = `${phrase}:${service}:${key}`
+
+            const hash = CryptoJS.SHA256(combined).toString(CryptoJS.enc.Hex)
+
+            const numericHash = hash.split('').map(char => {
+                if (isNaN(char)) {
+                    return char.charCodeAt(0) % 10
+                }
+                return char
+            }).join('')
+
+            document.querySelector('.result input').value = numericHash.substring(0, length)
+
+            document.querySelector('.result').removeAttribute('data-hidden')
+        }
+
+        const reset = () => {
+            document.querySelector('.result input').value = ''
+            document.querySelector('.result').setAttribute('data-hidden', 'true')
+            document.querySelector('[data-key]').value = ''
+            document.querySelector('[data-service]').value = ''
+            document.querySelector('[data-phrase]').value = ''
+            document.querySelector('[data-length]').value = 6
+            
+        }
+    </script>
+</body>
+
+</html>
