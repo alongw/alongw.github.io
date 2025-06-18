@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在线考试系统</title>  <style>
+    body {
+      font-family: 'Microsoft YaHei', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    .exam-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+    }
+    .warning-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 0, 0, 0.9);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    .warning-text {
+      color: white;
+      font-size: 36px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .stats-container {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .reason-log {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      max-height: 200px;
+      overflow-y: auto;
+      width: 300px;
+    }
+    .reason-log h3 {
+      margin-top: 0;
+      font-size: 16px;
+      color: #2c3e50;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 5px;
+    }
+    .reason-item {
+      padding: 5px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+    .reason-time {
+      font-size: 12px;
+      color: #666;
+    }
+    /* 开始考试界面样式 */
+    .start-exam-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      text-align: center;
+    }
+    .mode-selection {
+      display: flex;
+      margin-top: 30px;
+      gap: 20px;
+    }
+    .mode-button {
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: bold;
+    }
+    .fullscreen-button {
+      background-color: #4CAF50;
+      color: white;
+    }
+    .normal-button {
+      background-color: #2196F3;
+      color: white;
+    }
+    .mode-button:hover {
+      opacity: 0.9;
+      transform: scale(1.05);
+    }
+    .exam-content {
+      display: none; /* 初始隐藏考试内容 */
+    }
+    .exam-welcome {
+      font-size: 24px;
+      margin: 20px 0;
+      color: #333;
+    }
+    .exam-description {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 30px;
+      max-width: 600px;
+      line-height: 1.6;
+    }
+  </style>
+  </style>
+</head>
+<body>
+<!-- 开始考试界面 -->
+<div class="exam-container" id="startExamContainer">
+  <h1>在线考试系统</h1>
+  <div class="start-exam-container">
+    <div class="exam-welcome">欢迎参加在线考试</div>
+    <div class="exam-description">
+      本系统会监控您的考试行为，检测切屏、复制粘贴等作弊行为。请选择您的考试模式：
+    </div>
+    <div class="mode-selection">
+      <button class="mode-button fullscreen-button" id="fullscreenMode">全屏模式考试</button>
+      <button class="mode-button normal-button" id="normalMode">普通模式考试</button>
+    </div>
+  </div>
+</div>
+
+<!-- 考试内容界面 -->
+<div class="exam-container exam-content" id="examContent">
+  <h1>在线考试系统</h1>
+  <div class="stats-container">
+    <div>切屏次数: <span id="leave-count">0</span></div>
+    <div>最近一次切屏时长: <span id="leave-duration">0</span> 秒</div>
+  </div>
+  
+  <!-- 这里可以添加真实的考试内容 -->
+  <div class="exam-questions">
+    <h2>考试题目</h2>
+    <div class="question">
+      <p><strong>1. 以下哪种行为不属于考试作弊行为？</strong></p>
+      <label><input type="radio" name="q1"> A. 查看其他网页</label><br>
+      <label><input type="radio" name="q1"> B. 使用搜索引擎</label><br>
+      <label><input type="radio" name="q1"> C. 认真思考后作答</label><br>
+      <label><input type="radio" name="q1"> D. 使用聊天工具咨询他人</label><br>
+    </div>
+    <div class="question">
+      <p><strong>2. 以下哪项是在线考试系统通常会监控的内容？</strong></p>
+      <label><input type="checkbox" name="q2"> A. 切换标签页</label><br>
+      <label><input type="checkbox" name="q2"> B. 复制粘贴行为</label><br>
+      <label><input type="checkbox" name="q2"> C. 鼠标移出页面</label><br>
+      <label><input type="checkbox" name="q2"> D. 开发者工具使用</label><br>
+    </div>
+  </div>
+</div>
+
+<div class="warning-overlay" id="warningOverlay">  
+    <div class="warning-text">考试结束！</div>
+    <div class="warning-text">您的成绩不合格！</div>
+  <div class="warning-text">原因: <span id="warning-reason">未知</span></div>
+  <div class="warning-text">作弊时长: <span id="warning-duration">0</span> 秒</div>
+  <div class="warning-text">此行为已被记录</div>
+</div>
+
+<div id="reason-log" class="reason-log">
+  <h3>切屏行为记录</h3>
+  <div id="reason-list"></div>
+</div>
+ 
+<script>
+  let isCut = false;
+  let lastTime;
+  let warningTimeout;
+  let fullscreenInterval;
+  let originalMousePosition = { x: 0, y: 0 };
+  let mouseInactiveTime = 0;
+  let mouseInactiveInterval;
+  let screenshots = [];
+  let examStartTime;
+  let totalLeaveTime = 0;
+  let isFullscreenMode = false; // 是否为全屏模式
+  
+  // 初始化考试模式选择
+  document.getElementById('fullscreenMode').addEventListener('click', function() {
+    startExam(true);
+  });
+  
+  document.getElementById('normalMode').addEventListener('click', function() {
+    startExam(false);
+  });
+  
+  // 开始考试函数
+  function startExam(fullscreenMode) {
+    // 隐藏开始界面，显示考试内容
+    document.getElementById('startExamContainer').style.display = 'none';
+    document.getElementById('examContent').style.display = 'block';
+    
+    // 记录开始时间
+    examStartTime = Date.now();
+    
+    // 设置考试模式
+    isFullscreenMode = fullscreenMode;
+    
+    // 初始化考试监控
+    initExamMonitoring();
+    
+    // 如果是全屏模式，请求全屏
+    if (fullscreenMode) {
+      requestFullscreen(document.documentElement);
+    }
+  }
+  
+  // 初始化考试监控
+  function initExamMonitoring() {
+    updateLeaveCounter();
+    checkBrowserFeatures();
+    setupMouseMonitoring();
+    setupKeyboardMonitoring();
+    setupContextMenuPrevention();
+    setupCopyPastePrevention();
+    setupBrowserHistoryProtection();
+    
+    // 如果是全屏模式，设置全屏监控
+    if (isFullscreenMode) {
+      setupFullscreenMonitoring();
+    }
+    
+    // 每秒检查一次鼠标活动
+    mouseInactiveInterval = setInterval(checkMouseActivity, 1000);
+    
+    // 检测浏览器开发者工具
+    setInterval(detectDevTools, 1000);
+  }
+  
+  // 特性检测
+  function checkBrowserFeatures() {
+    console.log("浏览器特性检测启动");
+    
+    // 检测浏览器是否支持各种需要的API
+    const features = {
+      visibilityAPI: typeof document.hidden !== "undefined",
+      fullscreenAPI: typeof document.documentElement.requestFullscreen !== "undefined",
+      storageAPI: typeof window.sessionStorage !== "undefined",
+      pageVisibilityAPI: typeof document.addEventListener !== "undefined"
+    };
+    
+    console.log("浏览器特性支持情况:", features);
+  }
+  
+  // 切换选项卡，切到其他程序，最小化窗口监听
+  document.addEventListener('visibilitychange', () => {
+    if (!examStartTime) return; // 如果考试未开始，不执行
+    
+    let state = document.visibilityState;
+    
+    if (state == "hidden") {
+      recordTime();
+      document.title = "警告：检测到切换标签页行为！";
+      logWarning("切换标签页");
+    } else {
+      const timeDiff = showTimeDiff();
+      document.title = "在线考试系统";
+      showWarningOverlay(timeDiff, "切换标签页");
+    }
+  });
+  
+  // 分屏监听
+  window.onblur = () => {
+    if (!examStartTime) return; // 如果考试未开始，不执行
+    
+    recordTime();
+    document.title = "警告：检测到切屏行为！";
+    logWarning("窗口失去焦点");
+  };
+  
+  window.onfocus = () => {
+    if (!examStartTime) return; // 如果考试未开始，不执行
+    
+    const timeDiff = showTimeDiff();
+    document.title = "在线考试系统";
+    showWarningOverlay(timeDiff, "窗口失去焦点");
+  };
+  
+  // 全屏监控
+  function setupFullscreenMonitoring() {
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+    
+    // 定期检查是否在全屏状态
+    fullscreenInterval = setInterval(() => {
+      if (isFullscreenMode && 
+          !document.fullscreenElement && 
+          !document.webkitFullscreenElement && 
+          !document.mozFullScreenElement && 
+          !document.msFullscreenElement) {
+        recordTime();
+        logWarning("退出全屏");
+        requestFullscreen(document.documentElement);
+      }
+    }, 2000);
+  }
+  
+  // 处理全屏变化
+  function handleFullscreenChange() {
+    if (!examStartTime) return; // 如果考试未开始，不执行
+    
+    if (isFullscreenMode && 
+        !document.fullscreenElement && 
+        !document.webkitFullscreenElement && 
+        !document.mozFullScreenElement && 
+        !document.msFullscreenElement) {
+      recordTime();
+      logWarning("退出全屏");
+      // 尝试再次请求全屏
+      setTimeout(() => {
+        requestFullscreen(document.documentElement);
+      }, 500);
+    } else {
+      showTimeDiff();
+    }
+  }
+  
+  // 请求全屏
+  function requestFullscreen(element) {
+    if (element.requestFullscreen) {
+      element.requestFullscreen().catch(err => {
+        console.log('全屏请求被拒绝:', err);
+        logWarning("全屏请求被拒绝");
+      });
+    } else if (element.webkitRequestFullscreen) {
+      element.webkitRequestFullscreen();
+    } else if (element.mozRequestFullScreen) {
+      element.mozRequestFullScreen();
+    } else if (element.msRequestFullscreen) {
+      element.msRequestFullscreen();
+    }
+  }  // 鼠标监控
+  function setupMouseMonitoring() {
+    document.addEventListener('mousemove', (e) => {
+      if (!examStartTime) return; // 如果考试未开始，不执行
+      mouseInactiveTime = 0;
+      originalMousePosition = { x: e.clientX, y: e.clientY };
+    });
+    
+    document.addEventListener('mouseout', (e) => {
+      if (!examStartTime) return; // 如果考试未开始，不执行
+      if (e.relatedTarget === null && e.target === document.documentElement) {
+        recordTime();
+        logWarning("鼠标移出页面");
+      }
+    });
+    
+    document.addEventListener('mousein', (e) => {
+      if (!examStartTime) return; // 如果考试未开始，不执行
+      const timeDiff = showTimeDiff();
+      if(timeDiff > 0) {
+        showWarningOverlay(timeDiff, "鼠标移出页面");
+      }
+    });
+  }
+  
+  // 检查鼠标活动
+  function checkMouseActivity() {
+    if (!examStartTime) return; // 如果考试未开始，不执行
+    mouseInactiveTime += 1;
+    if (mouseInactiveTime > 60) { // 如果鼠标超过60秒没有活动
+      logWarning("鼠标长时间未活动");
+    }
+  }
+    // 键盘监控
+  function setupKeyboardMonitoring() {
+    document.addEventListener('keydown', (e) => {
+      if (!examStartTime) return; // 如果考试未开始，不执行
+      
+      // 检测Alt+Tab, Alt+F4, Ctrl+N等组合键
+      if ((e.altKey && e.key === 'Tab') || 
+          (e.altKey && e.key === 'F4') || 
+          (e.ctrlKey && e.key === 'n') ||
+          (e.metaKey && e.key === 'Tab')) {
+        e.preventDefault();
+        recordTime();
+        const keyCombo = (e.altKey ? "Alt+" : "") + (e.ctrlKey ? "Ctrl+" : "") + (e.metaKey ? "Meta+" : "") + e.key;
+        logWarning("检测到快捷键: " + keyCombo);
+        showWarningOverlay(0.1, "尝试使用快捷键: " + keyCombo); // 立即显示警告
+        return false;
+      }
+      
+      // 监控打开开发者工具的快捷键
+      if ((e.ctrlKey && e.shiftKey && e.key === 'I') || 
+          (e.ctrlKey && e.shiftKey && e.key === 'J') || 
+          (e.ctrlKey && e.key === 'U') || 
+          e.key === 'F12') {
+        e.preventDefault();
+        recordTime();
+        logWarning("尝试打开开发者工具");
+        showWarningOverlay(0.1, "尝试打开开发者工具快捷键"); // 立即显示警告
+        return false;
+      }
+    });
+  }    // 禁用右键菜单
+  function setupContextMenuPrevention() {
+    document.addEventListener('contextmenu', (e) => {
+      if (!examStartTime) return true; // 如果考试未开始，允许右键菜单
+      
+      e.preventDefault();
+      logWarning("尝试打开右键菜单");
+      showWarningOverlay(0.1, "尝试打开右键菜单"); // 立即显示警告
+      return false;
+    });
+  }
+  
+  // 禁用复制粘贴
+  function setupCopyPastePrevention() {
+    document.addEventListener('copy', (e) => {
+      if (!examStartTime) return true; // 如果考试未开始，允许复制
+      
+      e.preventDefault();
+      logWarning("尝试复制内容");
+      showWarningOverlay(0.1, "尝试复制内容"); // 立即显示警告
+      return false;
+    });
+    
+    document.addEventListener('paste', (e) => {
+      if (!examStartTime) return true; // 如果考试未开始，允许粘贴
+      
+      e.preventDefault();
+      logWarning("尝试粘贴内容");
+      showWarningOverlay(0.1, "尝试粘贴内容"); // 立即显示警告
+      return false;
+    });
+    
+    document.addEventListener('cut', (e) => {
+      if (!examStartTime) return true; // 如果考试未开始，允许剪切
+      
+      e.preventDefault();
+      logWarning("尝试剪切内容");
+      showWarningOverlay(0.1, "尝试剪切内容"); // 立即显示警告
+      return false;
+    });
+  }
+    // 保护浏览器历史记录
+  function setupBrowserHistoryProtection() {
+    window.addEventListener('popstate', (e) => {
+      if (!examStartTime) return; // 如果考试未开始，不执行
+      
+      logWarning("尝试使用浏览器导航");
+      showWarningOverlay(0.1, "尝试使用浏览器导航"); // 立即显示警告
+      history.pushState(null, null, window.location.href);
+    });
+    
+    history.pushState(null, null, window.location.href);
+  }
+  
+  // 记录切屏出去的时间
+  function recordTime() {
+    isCut = true;
+    lastTime = Date.now();
+  }
+  
+  // 计算切屏出去与切屏回来的时间差
+  function showTimeDiff() {
+    if (isCut) {
+      let timeDiff = (Date.now() - lastTime) / 1000;
+      totalLeaveTime += timeDiff;
+      
+      console.log("切屏时长: " + timeDiff + "秒");
+      document.getElementById('leave-duration').textContent = timeDiff.toFixed(1);
+      document.getElementById('warning-duration').textContent = timeDiff.toFixed(1);
+      
+      countTimes();
+      isCut = false;
+      return timeDiff;
+    }
+    return 0;
+  }
+    // 显示警告覆盖层
+  function showWarningOverlay(timeDiff, reason) {
+    if (timeDiff > 0) {
+      const warningOverlay = document.getElementById('warningOverlay');
+      const warningReason = document.getElementById('warning-reason');
+      
+      // 设置检测到的原因
+      warningReason.textContent = reason || "未知原因";
+      
+      // 显示警告
+      warningOverlay.style.display = 'flex';
+      
+      // 将原因添加到记录列表
+      addReasonToList(reason, timeDiff);
+      
+      // 3秒后隐藏警告
+      clearTimeout(warningTimeout);
+      warningTimeout = setTimeout(() => {
+        warningOverlay.style.display = 'none';
+      }, 3000);
+    }
+  }
+  
+  // 添加原因到记录列表
+  function addReasonToList(reason, timeDiff) {
+    const reasonList = document.getElementById('reason-list');
+    const now = new Date();
+    const timeString = now.getHours().toString().padStart(2, '0') + ':' + 
+                      now.getMinutes().toString().padStart(2, '0') + ':' + 
+                      now.getSeconds().toString().padStart(2, '0');
+    
+    // 创建新的记录项
+    const item = document.createElement('div');
+    item.className = 'reason-item';
+    item.innerHTML = `
+      <div>${reason || "未知原因"} (${timeDiff.toFixed(1)}秒)</div>
+      <div class="reason-time">${timeString}</div>
+    `;
+    
+    // 添加到列表顶部
+    if (reasonList.firstChild) {
+      reasonList.insertBefore(item, reasonList.firstChild);
+    } else {
+      reasonList.appendChild(item);
+    }
+    
+    // 限制显示的记录数量
+    while (reasonList.children.length > 10) {
+      reasonList.removeChild(reasonList.lastChild);
+    }
+  }
+  
+  // 计算切屏的次数
+  function countTimes() {
+    let store = window.sessionStorage.getItem('leave-times');
+    if (store === null) {
+      window.sessionStorage.setItem('leave-times', 1);
+      store = 1;
+    } else {
+      store = parseInt(store) + 1;
+      window.sessionStorage.setItem('leave-times', store);
+    }
+    updateLeaveCounter();
+    return store;
+  }
+  
+  // 更新UI上的切屏计数器
+  function updateLeaveCounter() {
+    let store = window.sessionStorage.getItem('leave-times');
+    if (store === null) {
+      store = 0;
+      window.sessionStorage.setItem('leave-times', 0);
+    }
+    document.getElementById('leave-count').textContent = store;
+  }    // 检测浏览器开发者工具
+  function detectDevTools() {
+    if (!examStartTime) return; // 如果考试未开始，不执行
+    
+    const threshold = 160;
+    const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+    const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+    
+    if (widthThreshold || heightThreshold) {
+      recordTime();
+      logWarning("检测到开发者工具");
+      showWarningOverlay(0.1, "检测到开发者工具"); // 立即显示警告
+    }
+    
+    // 另一种检测方法
+    if (window.devtools && window.devtools.open) {
+      recordTime();
+      logWarning("检测到开发者工具API");
+      showWarningOverlay(0.1, "检测到开发者工具API"); // 立即显示警告
+    }
+    
+    // 使用console.profile检测
+    try {
+      console.profile();
+      console.profileEnd();
+      if (console.clear) {
+        console.clear();
+      }
+    } catch (e) {
+      recordTime();
+      logWarning("通过console.profile检测到开发者工具");
+      showWarningOverlay(0.1, "通过console.profile检测到开发者工具"); // 立即显示警告
+    }
+  }
+  
+  // 如果支持，尝试截屏
+  function takeScreenshotIfSupported() {
+    if (!examStartTime) return; // 如果考试未开始，不执行
+    
+    if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+      try {
+        navigator.mediaDevices.getDisplayMedia({video: true})
+          .then(stream => {
+            const track = stream.getVideoTracks()[0];
+            const imageCapture = new ImageCapture(track);
+            
+            return imageCapture.grabFrame();
+          })
+          .then(bitmap => {
+            const canvas = document.createElement('canvas');
+            canvas.width = bitmap.width;
+            canvas.height = bitmap.height;
+            const context = canvas.getContext('2d');
+            context.drawImage(bitmap, 0, 0, bitmap.width, bitmap.height);
+            
+            const screenshot = {
+              time: new Date().toISOString(),
+              dataUrl: canvas.toDataURL('image/jpeg', 0.5)
+            };
+            
+            screenshots.push(screenshot);
+            console.log("截屏记录已保存");
+          })
+          .catch(err => {
+            console.log("截屏失败:", err);
+          });
+      } catch (e) {
+        console.log("截屏API不支持:", e);
+      }
+    }
+  }
+  
+  // 记录警告日志
+  function logWarning(warningType) {
+    if (!examStartTime) return; // 如果考试未开始，不执行
+    
+    const timestamp = new Date().toISOString();
+    const warningLog = {
+      type: warningType,
+      time: timestamp,
+      examTime: Math.floor((Date.now() - examStartTime) / 1000) + "秒"
+    };
+    
+    console.log("警告记录:", warningLog);
+    
+    // 将警告保存到本地存储
+    let warnings = JSON.parse(localStorage.getItem('exam-warnings') || '[]');
+    warnings.push(warningLog);
+    localStorage.setItem('exam-warnings', JSON.stringify(warnings));
+  }
+  
+  // 在离开页面时发送汇总报告
+  window.addEventListener('beforeunload', function(e) {
+    if (!examStartTime) return; // 如果考试未开始，不执行
+    
+    const examDuration = Math.floor((Date.now() - examStartTime) / 1000);
+    const leaveCount = window.sessionStorage.getItem('leave-times') || 0;
+    
+    const report = {
+      examDuration: examDuration + "秒",
+      leaveCount: leaveCount,
+      totalLeaveTime: totalLeaveTime.toFixed(1) + "秒",
+      leavePercentage: ((totalLeaveTime / examDuration) * 100).toFixed(2) + "%",
+      warnings: JSON.parse(localStorage.getItem('exam-warnings') || '[]')
+    };
+    
+    console.log("考试行为报告:", report);
+    
+    // 提示用户是否确定离开
+    e.returnValue = "确定要离开考试页面吗？所有的切屏行为都已被记录。";
+    return e.returnValue;
+  });
+</script>
+</body>
+</html>
