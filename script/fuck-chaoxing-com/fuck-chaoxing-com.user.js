@@ -22,7 +22,7 @@
             console.warn('[解除复制] 解除选择失败:', e);
         }
 
-        // 移除遮水印
+        // 移除水印
         try {
             const removeMaskDiv = () => {
                 const masks = document.querySelectorAll('.mask_div');
